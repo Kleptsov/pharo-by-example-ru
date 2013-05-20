@@ -76,7 +76,7 @@
 
 %\ruleref{everything}
 
-Мантра «все является объектом» очень заразная. Даже немного поработав с \st вы начнете удивляться, как это правило упрощает все, что вы делаете.
+Мантра <<все является объектом>> очень заразная. Даже немного поработав с \st вы начнете удивляться, как это правило упрощает все, что вы делаете.
 Целые числа, например, настоящие объекты, то есть вы можете посылать им сообщения точно так же как любому другому объекту.
 
 \begin{code}{@TEST}
@@ -95,11 +95,12 @@
 Глубже в реализации \st существуют три разных типа объектов. Обычные объекты (1) с переменными экземпляра передающимися по ссылкам, \emph{малые целые числа} (2) передающиеся по значению, а так же перечислимые объекты, такие как массивы содержащие смежные области памяти. Красота \st в том, что обычно совершенно не имеет смысла различать эти три типа объектов.
 
 %=========================================================
-\section{Every object is an instance of a class}
+\section{Каждый объект является экземпляром класса}
 
 %\ruleref{instance}
 
-Every object has a class; you can find out which by sending it the message \ct{class}.
+% Every object has a class; you can find out which by sending it the message \ct{class}.
+Каждый объект принадлежит классу, понять какому именно можно послав объекту сообщение \ct{class}.
 
 \begin{code}{@TEST}
 1 class                 --> SmallInteger
@@ -110,42 +111,64 @@ Every object has a class; you can find out which by sending it the message \ct{c
 Object new class --> Object
 \end{code}
 
-A class defines the \emph{structure} of its instances via instance variables,
-and the \emph{behavior} of its instances via methods.
-Each method has a name, called its \emphsubind{method}{selector}, which is unique within the class.
+Класс определяет \emph{структуру} его экземпляров через переменные экземпляра
+и \emph{поведение} через методы.
+Каждый метод имеет имя уникальное внутри класса называемое \emphind{селектор метода}.
+%A class defines the \emph{structure} of its instances via instance variables,
+%and the \emph{behavior} of its instances via methods.
+%Each method has a name, called its \emphsubind{method}{selector}, which is unique within the class.
 
-Since \emph{classes are objects}, and \emph{every object is an instance of a class}, it follows that classes must also be instances of classes.
-A class whose instances are classes is called a \emphind{metaclass}.
-Whenever you create a class, the system automatically creates a metaclass for you.
-The metaclass defines the structure and behavior of the class that is its instance.
-99\% \damien{Did any of you verify it is 99\%? Maybe 'Most' would have been better than '99\%'} of the time you will not need to think about metaclasses, and may happily ignore them.
-(We will have a closer look at metaclasses in \charef{metaclasses}.)
+Из утверждений \emph{классы это объекты} и \emph{каждый объект — экземпляр класса} следует, что классы тоже должны быть экземплярами классов.
+%Since \emph{classes are objects}, and \emph{every object is an instance of a class}, it follows that classes must also be instances of classes.
+Классы чьими экземплярами являются другие классы называются \emphind{метаклассами}.
+%A class whose instances are classes is called a \emphind{metaclass}.
+Каждый раз когда вы создаете класс, система автоматический создает метакласс.
+%Whenever you create a class, the system automatically creates a metaclass for you.
+Метакласс определяет стуктуру и поведение класса, который станет его экземпляром.
+%The metaclass defines the structure and behavior of the class that is its instance.
+Большую часть времени вам не придется думать о метаклассах, можно вообще забыть о их существовании.
+%99\% \damien{Did any of you verify it is 99\%? Maybe 'Most' would have been better than '99\%'} of the time you will not need to think about metaclasses, and may happily ignore them.
+(Поближе мы рассмотим метаклассы в \charef{metaclasses}.)
+%(We will have a closer look at metaclasses in \charef{metaclasses}.)
 
 %---------------------------------------------------------
-\subsection{Instance variables}
+\subsection{Переменные экземпляра}
 
-Instance variables in \st are private to the \emph{instance} itself.
-This is in contrast to \ind{Java} and \ind{C++}, which allow instance variables (also known as ``fields'' or ``member variables'') to be accessed by any other instance that happens to be of the same class.
-We say that the \emphind{encapsulation boundary} of objects in Java and C++ is the class, whereas in \st it is the instance.
+%TODO: Не нравится мне этот перевод.
+Переменные экземпляра в \st доступны для использования только внутри \emph{самого экземпляра},
+в отличие от \ind{Java} и \ind{C++}, которые позволяют получать доступ к переменным экземпляра (еще их называют <<полями>> или <<членами класса>>) из любого другого экземпляра того же класса. 
+%% We say that the \emphind{encapsulation boundary} of objects in Java and C++ is the class, whereas in \st it is the instance.
+Можно сказать, что \emphind{границы инкапсуляции} в Java и C++ проходят по классу, а в \st по экземпляру класса.
 \seeindex{variable!instance}{instance variable}
 \seeindex{field}{instance variable}
 \seeindex{attribute}{instance variable}
 \seeindex{slot}{instance variable}
 \index{instance variable}
 
-In \st, two instances of the same class cannot access each other's instance variables unless the class defines ``\ind{accessor} methods''.
-There is no language syntax that provides direct access to the instance variables of any other object.
-(Actually, a mechanism called \ind{reflection}
+%% In \st, two instances of the same class cannot access each other's instance variables unless the class defines ``\ind{accessor} methods''.
+В \st два экземпляра одного класса не могут получить доступ к внутренним переменным друг друга если не определены специальные методы доступа --- \ind{<<аксессоры>>}.
+%% There is no language syntax that provides direct access to the instance variables of any other object.
+%% (Actually, a mechanism called \ind{reflection}
+Не существует специальной синтаксической формы предоставляющей прямой доступ к переменным экземпляра любого объекта (хотя существует механизм \ind{Рефлексии}  
 %, discussed in \charef{metaprog},
-does provide a way to ask another object for the values of its instance variables; meta-programming is intended for writing tools like the object \ind{inspector}, whose sole purpose is to look inside other objects.)
+%% does provide a way to ask another object for the values of its instance variables; meta-programming is intended for writing tools like the object \ind{inspector}, whose sole purpose is to look inside other objects.)
+с помощью которого можно попросить другой объект показать значения внутренних переменных. Метапрограммирование как раз предназначено для написания инструментов типа Object \ind{inspector}, чья единственная задача --- заглядывать внутрь других объектов.
 
-Instance variables can be accessed by name in any of the instance methods of the class that defines them, and also in the methods defined in its subclasses. This means that \st instance variables are similar to \emph{protected} variables in C++ and Java. However, we prefer to say that they are private, because it is considered bad style in \st to access an instance variable directly from a subclass. 
+Переменные экземпляра доступны для всех методов класса и его потомков, где они были определены. Это означает, что в \st переменные экземпляра похожи на \emph{protected} переменные в C++ и Java. Но постарайтесь думать, что они приватные, в \st не принято напрямую обращаться к переменным экземпляра из потомка.
 
-\subsubsection{Example}
-Method \cmind{Point}{dist:} (\mthref{dist:}) computes the distance between the receiver and another point. The instance variables \ct{x} and \ct{y} of the receiver are accessed directly by the method body.  However, the instance variables of the other point must be accessed by sending it the messages \ct{x} and \ct{y}.
+%\subsubsection{Example}
+\subsubsection{Пример}
+%Method \cmind{Point}{dist:} (\mthref{dist:}) computes the distance between the receiver and another point. The instance variables \ct{x} and \ct{y} of the receiver are accessed directly by the method body.  However, the instance variables of the other point must be accessed by sending it the messages \ct{x} and \ct{y}.
+
+Метод Point>>dist: (\mthref{dist:}) вычисляет расстояние между двумя точками
+(между получателем и другой точкой. Переменные экземпляра \ct{х} и \ct{у}
+ получателя  напрямую доступны через тело метода. Как бы то ни было,
+переменные экземпляра другой точки должны быть доступны через
+посылку им сообщений \ct{х} и \ct{у}.
 
 \needlines{7}
-\begin{method}[dist:]{the distance between two points}
+%\begin{method}[dist:]{the distance between two points}
+\begin{method}[dist:]{Расстояние между двумя точками}
 Point>>>dist: aPoint 
 	"Answer the distance between aPoint and the receiver."  
 	| dx dy |
@@ -158,51 +181,104 @@ Point>>>dist: aPoint
 1@1 dist: 4@5 --> 5.0
 \end{code}
 
-The key reason to prefer instance-based encapsulation to class-based encapsulation is that it enables different implementations of the same abstraction to coexist.
-For example, method \ct{point>>>dist:}, need not know or care whether the argument \ct{aPoint} is an instance of the same class as the receiver.  The argument object might be represented in polar coordinates, or as a record in a database, or on another computer in a distributed system; as long as it can respond to the messages \ct{x} and \ct{y}, the code in \mthref{dist:} will still work.
+% The key reason to prefer instance-based encapsulation to class-based encapsulation is that it enables different implementations of the same abstraction to coexist.
+% For example, method \ct{point>>>dist:}, need not know or care whether the argument \ct{aPoint} is an instance of the same class as the receiver.  The argument object might be represented in polar coordinates, or as a record in a database, or on another computer in a distributed system; as long as it can respond to the messages \ct{x} and \ct{y}, the code in \mthref{dist:} will still work.
+
+Основной причиной, по которой предпочитают инкапсуляцию на основе
+экземпляров инкапсуляции на основе классов является то,
+что она позволяет различным реализациям одной и той же абстракции
+сосуществовать. Например, метод Point>>dist:, не знает и не заботится о том,
+является ли аргумент aPoint экземпляром того же класса, что и получатель. 
+Аргумент объекта может быть представлен в полярных координатах,
+или как запись в базе данных, или на другом компьютере в распределенной системе;
+до тех пор, {\color{red}(пока он может отвечать на сообщения х и у,
+код в методе 5.1 будет по-прежнему работать)} пока он может реагировать на
+сообщения х и у, код в метод 5.1 по-прежнему будет работать. 
 
 %---------------------------------------------------------
-\subsection{Methods}
+%\subsection{Methods}
+\subsection{Методы}
 
-All methods are \subind{method}{public}.\footnote{Well, almost all.  In \pharo, methods whose selectors start with the string \ct{pvt} are private: a \ct{pvt} message can be sent \emph{only} to \self.  However, \ct{pvt} methods are not used very much.}
-Methods are grouped into protocols that indicate their intent.
-Some common protocol names have been established by convention, for example, \protind{accessing} for all accessor methods, and \protind{initialization} for establishing a consistent initial state for the object.
-The protocol \protind{private} is sometimes used to group methods that should not be seen from outside.
-Nothing, however, prevents you from sending a message that is implemented by such a ``private'' method.
+% All methods are \subind{method}{public}.\footnote{Well, almost all.  In \pharo, methods whose selectors start with the string \ct{pvt} are private: a \ct{pvt} message can be sent \emph{only} to \self.  However, \ct{pvt} methods are not used very much.}
+%Methods are grouped into protocols that indicate their intent.
+%Some common protocol names have been established by convention, for example, \protind{accessing} for all accessor methods, and \protind{initialization} for establishing a consistent initial state for the object.
+%The protocol \protind{private} is sometimes used to group methods that should not be seen from outside.
+%Nothing, however, prevents you from sending a message that is implemented by such a ``private'' method.
 
-Methods can access all instance variables of the object.
-Some \st developers prefer to access instance variables only through accessors.
-This practice has some value, but it also clutters the interface of your classes, and worse, exposes private state to the world.
+Все методы открыты. Методы сгруппированы в протоколы,
+которые указывают на их цель. Некоторые общие названия протокола были
+созданы в соответствии с соглашением, например accessing для всех методов
+доступа и initialization для создания согласующегося начального состояния объекта.
+Протокол private иногда используется для группы методов, которые не следует
+рассматривать извне. Ничто, однако, не запрещает  вам отправлять сообщения,
+которые реализуется таким <<private>> методом.
+
+%Methods can access all instance variables of the object.
+%Some \st developers prefer to access instance variables only through accessors.
+%This practice has some value, but it also clutters the interface of your classes, and worse, exposes private state to the world.
+
+Методы могут получить доступ ко всем переменным экземпляра объекта.
+Некоторые смолтокеры предпочитают получать доступ к переменным экземпляра
+только через методы доступа. Эта практика имеет некоторую ценность,
+но и загромождает интерфейс вашего класса, и что хуже,
+выставляет private состояние всему.
 
 %---------------------------------------------------------
-\subsection{The instance side and the class side}
+%\subsection{The instance side and the class side}
+\subsection{Стороны экземпляра и класса}
 
-Since classes are objects, they can have their own instance variables and their own methods.
-We call these \emph{class instance variables} and \emph{class methods}, but they are really no different from ordinary instance variables and methods:
-class instance variables are just instance variables defined by a metaclass, and class methods are just methods defined by a \ind{metaclass}. 
+%Since classes are objects, they can have their own instance variables and their own methods.
+% We call these \emph{class instance variables} and \emph{class methods}, but they are really no different from ordinary instance variables and methods:
+% class instance variables are just instance variables defined by a metaclass, and class methods are just methods defined by a \ind{metaclass}. 
+
+Поскольку классы являются объектами, то они могут иметь свои переменные
+экземпляра и свои собственные методы. Мы называем это переменные
+экземпляра класса и методами класса,
+но они ничем не отличаются от обычных переменных экземпляра
+и методов: переменные экземпляра класса \,---\, только переменные экземпляра,
+определенные метаклассом, а методы класса \,---\, только методы, определенные
+метаклассом.
 \index{class!instance variable}
 \seeindex{variable!class instance}{class, instance variable}
 \index{class!method}
 
-A class and its \ind{metaclass} are two separate classes, even though the former is an instance of the latter. 
-However, this is largely irrelevant to you as a programmer: you are concerned with defining the behavior of your objects and the classes that create them.
+% A class and its \ind{metaclass} are two separate classes, even though the former is an instance of the latter. 
+% However, this is largely irrelevant to you as a programmer: you are concerned with defining the behavior of your objects and the classes that create them.
+
+Класс и метакласс \,---\, это два отдельных класса, хотя первый является
+экземпляром последнего. Однако, это не играет большой роли для вас,
+как программистов; вы обеспокоены определением поведения ваших объектов и
+классов, которые создают их. 
 
 \begin{figure}[htb]
 \begin{center}
 \includegraphics[width=\textwidth]{Color-Buttons}
-\caption{Browsing a class and its metaclass.
+% \caption{Browsing a class and its metaclass.
+\caption{Просмотр класса и его метакласса.
 % \sd{Do we use Key everywhere in the picture as a legend indicator?}
 % \on{sure, wherever appropriate}
 \figlabel{Buttons}}
 \end{center}
 \end{figure}
 
-For this reason, the browser \index{browser} helps you to browse both class and metaclass as if they were a single thing with two ``sides'': the ``\subind{browser}{instance side}'' and the ``\subind{browser}{class side}'', as shown in \figref{Buttons}. Clicking 
-on the \button{instance} button browses the class \ct{Color}, \ie you browse the methods that are executed when messages
-are sent to an instance of \ct{Color}, like the blue color. Pressing the \button{class} button browses the class \ct{Color class}, \ie you see
-the methods that will be executed when messages are sent to the class \ct{Color} itself.
-For example, \ct{Color blue} sends the message \ct{blue} to the class \clsind{Color}.
-You will therefore find the method \ct{blue} defined on the class side of \ct{Color}, not on the instance side.
+% For this reason, the browser \index{browser} helps you to browse both class and metaclass as if they were a single thing with two ``sides'': the ``\subind{browser}{instance side}'' and the ``\subind{browser}{class side}'', as shown in \figref{Buttons}. Clicking 
+% on the \button{instance} button browses the class \ct{Color}, \ie you browse the methods that are executed when messages
+% are sent to an instance of \ct{Color}, like the blue color. Pressing the \button{class} button browses the class \ct{Color class}, \ie you see
+% the methods that will be executed when messages are sent to the class \ct{Color} itself.
+% For example, \ct{Color blue} sends the message \ct{blue} to the class \clsind{Color}.
+% You will therefore find the method \ct{blue} defined on the class side of \ct{Color}, not on the instance side.
+
+Браузер помогает вам просматривать как класс, так и метакласс,
+как если бы они были медалью с двумя <<сторонами>>: <<сторона экземпляра>>
+и <<сторона класса>> , так как показано на рисунке 5.1.
+Нажатие на кнопку \button{instance}, например просматривает класс Color, то есть,
+вы увидите методы, которые выполняются когда сообщения отправлены к экземпляпу
+Color, например синий цвет. Нажатие на кнопку \button{class} просматривает класс
+Color class, то есть вы видите методы, которые будут выполняться, когда сообщения
+отправлены классу Color как таковому). Например, Color blue посылает сообщение
+blue классу Color. Поэтому вы найдёте метод blue, определённый на стороне класса,
+а не на стороне экземпляра. 
+
 \seeindex{class side}{browser!class side}
 \seeindex{instance side}{browser!instance side}
 
@@ -214,30 +290,70 @@ aColor red  --> 0.0         "Instance side accessor method red"
 aColor blue --> 1.0        "Instance side accessor method blue"
 \end{code}
 
-You define a class by filling in the template proposed on the \subind{browser}{instance side}.
-When you accept this template, the system creates not just the class that you defined, but also the corresponding metaclass.
-You can browse the metaclass by clicking on the \button{class} button.
-The only part of the metaclass creation template that makes sense for you to edit directly is the list of instance variable names.
+% You define a class by filling in the template proposed on the \subind{browser}{instance side}.
+% When you accept this template, the system creates not just the class that you defined, but also the corresponding metaclass.
+% You can browse the metaclass by clicking on the \button{class} button.
+% The only part of the metaclass creation template that makes sense for you to edit directly is the list of instance variable names.
 
-Once a class has been created, clicking the \button{instance} button lets you edit and browse the methods that will be possessed by instances of that class (and of its subclasses). For example, we can see in \figref{Buttons} that the method \ct{hue} is defined on instances of the class \ct{Color}.
-In contrast, the \button{class} button lets you browse and edit the metaclass (in this case \ct{Color class}).
+Вы определяете класс, заполняя шаблон, предложенный со стороны экземпляра.
+Когда вы принимаете этот шаблон, система создает не только класс,
+который вы определили, но и соответствующие метаклассы. Вы можете
+просматривать метакласс, нажав на кнопку \button{class}. Только часть шаблона
+создания метакласса, что имеет смысл для редактирования непосредственно,
+\,---\, список имен переменных экземпляра.
+
+% Once a class has been created, clicking the \button{instance} button lets you edit and browse the methods that will be possessed by instances of that class (and of its subclasses). For example, we can see in \figref{Buttons} that the method \ct{hue} is defined on instances of the class \ct{Color}.
+% In contrast, the \button{class} button lets you browse and edit the metaclass (in this case \ct{Color class}).
+
+Как только класс был создан, нажав на кнопку \button{instance} можно редактировать
+ и просматривать методы, которыми будут обладать экземпляры этого класса
+(и его подклассов).  Например, мы можем видеть на рисунке 5.1,
+что метод hue определён на экземплярах класса Color. А кнопка \button{сlass}
+позволяет вам просматривать и редактировать метакласс (в этом случае Color class).
 
 %---------------------------------------------------------
-\subsection{Class methods} 
+% \subsection{Class methods}
+\subsection{Методы класса} 
 
-Class methods can be quite useful; browse \ct{Color class} for some good examples.
-You will see that there are two kinds of \subind{class}{method} defined on a class: those that create instances of the class, like \cmind{Color class}{blue} and those that perform a utility function, like 
-\cmind{Color class}{showColorCube}.
-This is typical, although you will occasionally find class methods used in other ways.
+%Class methods can be quite useful; browse \ct{Color class} for some good examples.
+% You will see that there are two kinds of \subind{class}{method} defined on a class: those that create instances of the class, like \cmind{Color class}{blue} and those that perform a utility function, like 
+% \cmind{Color class}{showColorCube}.
+% This is typical, although you will occasionally find class methods used in other ways.
 
-It is convenient to place utility methods on the \subind{browser}{class side} because they can be executed without having to create any additional objects first.
-Indeed, many of them will contain a comment designed to make it easy to execute them.
+Методы класса могут быть весьма полезны: рассмотрим Color class в качестве
+примера. Вы увидите, что есть два вида методов, определенных в классе:
+те, которые создают экземпляры класса, типа Color class>>blue и те,
+которые выполняют полезные функции, типа Color class>>showColorCube.
+Это типичный пример использования методов, хотя иногда встречаются методы,
+используемые в других отношениях. 
 
-\dothis{Browse method \ct{Color class>>>showColorCube}, double-click just inside the quotes on the comment "\ct{Color showColorCube}" and type \short{d}.}
-You will see the effect of executing this method.  (Select \menu{World \go \ind{restore display}~(r)} to undo the effects.)
+% It is convenient to place utility methods on the \subind{browser}{class side} because they can be executed without having to create any additional objects first.
+% Indeed, many of them will contain a comment designed to make it easy to execute them.
 
-For those familiar with \ind{Java} and \ind{C++},  class methods may seem similar to static methods. 
-However, the uniformity of \st means that they are somewhat different: whereas Java static methods are really just statically-resolved procedures, \st class methods are dynamically-dispatched methods.  This means that inheritance, overriding and super-sends work for class methods in \st, whereas they don't work for static methods in Java.  
+Удобно размещать служебные методы на стороне класса,
+потому что они могут быть использованы без создания дополнительных объектов.
+Действительно, многие из них будут содержать комментарии,
+разработанные для того чтобы облегчить выполнение их.
+
+% \dothis{Browse method \ct{Color class>>>showColorCube}, double-click just inside the quotes on the comment "\ct{Color showColorCube}" and type \short{d}.}
+% You will see the effect of executing this method.  (Select \menu{World \go \ind{restore display}~(r)} to undo the effects.)
+
+\dothis{
+Обзор метода \ct{Color class>>>showColorCube}, дважды щелкните на
+комментарий <<\ct{Color showColorCube}>> и нажмите \short{d}.
+}
+Вы увидите эффект выполнения метода. (Выберите \menu{World \go \ind{restore display}~(r)}, чтобы отменить эффекты.)
+
+% For those familiar with \ind{Java} and \ind{C++},  class methods may seem similar to static methods. 
+% However, the uniformity of \st means that they are somewhat different: whereas Java static methods are really just statically-resolved procedures, \st class methods are dynamically-dispatched methods.  This means that inheritance, overriding and super-sends work for class methods in \st, whereas they don't work for static methods in Java. 
+
+Для тех, кто знаком с Java и C++, методы класса могут показаться похожими на
+статические методы. Тем не менее, единообразность Smalltalk означает,
+что они несколько другие: в то время как в Java статические методы на самом деле
+просто статически разрешенные процедуры, в классах Smalltalk методы динамически
+управляемые. Это означает, что наследование, переопределение и
+суперпозиция работают в  методах класса в Smalltalk, в то время как они не работают
+для статических методов в Java.  
 
 %---------------------------------------------------------
 \subsection{Class instance variables}
